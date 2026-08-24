@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Mi Pauta" />
+  <meta name="description" content="Seguimiento sencillo de la pauta prescrita de medicación." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="stylesheet" href="./styles.css" />
+  <title>Mi Pauta</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow" id="todayLabel">Hoy</p>
+        <h1>Mi Pauta</h1>
+      </div>
+      <button class="icon-button" id="settingsButton" aria-label="Abrir ajustes">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7.4-3.5c0-.5-.05-.98-.14-1.45l2-1.56-2-3.46-2.47 1a7.8 7.8 0 0 0-2.5-1.45L13.9 2h-4l-.4 3.08A7.8 7.8 0 0 0 7 6.53l-2.47-1-2 3.46 2 1.56A7.4 7.4 0 0 0 4.4 12c0 .5.05.98.14 1.45l-2 1.56 2 3.46 2.47-1a7.8 7.8 0 0 0 2.5 1.45L9.9 22h4l.4-3.08a7.8 7.8 0 0 0 2.5-1.45l2.47 1 2-3.46-2-1.56c.09-.47.14-.95.14-1.45Z"/></svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero-card" id="heroCard">
+        <div class="hero-head">
+          <div>
+            <span class="status-pill"><span class="status-dot"></span>Pauta activa</span>
+            <p class="hero-kicker" id="stageLabel">Fase 1 · Día 1 de 5</p>
+          </div>
+          <div class="progress-ring" id="progressRing" aria-label="Progreso de la fase">
+            <span id="progressRingText">1/5</span>
+          </div>
+        </div>
+
+        <div class="current-dose">
+          <p class="section-label">Ahora</p>
+          <div class="dose-title-row">
+            <div>
+              <h2 id="currentDoseTitle">Toma del mediodía</h2>
+              <p id="currentDoseSubtitle">Lo que corresponde en esta toma</p>
+            </div>
+            <span class="time-chip" id="currentPeriodChip">Mediodía</span>
+          </div>
+          <div id="currentDoseList" class="med-list"></div>
+          <button class="primary-button" id="markCurrentButton">Marcar toma como hecha</button>
+        </div>
+      </section>
+
+      <section class="warning-card hidden" id="unconfirmedCard">
+        <div class="warning-icon">!</div>
+        <div>
+          <h3>Pauta futura por confirmar</h3>
+          <p>El informe marca el cambio de dosis, pero no especifica qué toma modificar primero. La app no inventará esa distribución.</p>
+          <button class="text-button" id="openPlanFromWarning">Configurar cuando te lo confirmen →</button>
+        </div>
+      </section>
+
+      <section class="next-change-card">
+        <div class="next-change-top">
+          <div>
+            <p class="section-label">Próximo cambio</p>
+            <h2 id="nextChangeDate">29 de agosto</h2>
+          </div>
+          <div class="countdown-badge" id="countdownBadge">en 5 días</div>
+        </div>
+        <div class="change-grid" id="nextChangeDetails"></div>
+      </section>
+
+      <section class="today-card">
+        <div class="section-heading">
+          <div>
+            <p class="section-label">Hoy</p>
+            <h2>Tus tres momentos</h2>
+          </div>
+          <span class="completion-text" id="completionText">0 de 3</span>
+        </div>
+        <div class="timeline" id="dailyTimeline"></div>
+      </section>
+
+      <section class="plan-card">
+        <div class="section-heading">
+          <div>
+            <p class="section-label">Objetivo</p>
+            <h2>Plan de retirada</h2>
+          </div>
+          <button class="text-button" id="openPlanButton">Ver plan</button>
+        </div>
+        <div class="mini-plan">
+          <div class="mini-plan-row">
+            <div class="drug-dot lorazepam"></div>
+            <div class="mini-plan-copy">
+              <span>Lorazepam</span>
+              <strong id="lorazepamProgressText">3 mg → 0 mg</strong>
+            </div>
+            <div class="mini-bar"><span id="lorazepamBar"></span></div>
+          </div>
+          <div class="mini-plan-row">
+            <div class="drug-dot pregabalin"></div>
+            <div class="mini-plan-copy">
+              <span>Pregabalina</span>
+              <strong id="pregabalinProgressText">300 mg → 600 mg</strong>
+            </div>
+            <div class="mini-bar"><span id="pregabalinBar"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="base-card">
+        <div class="section-heading">
+          <div>
+            <p class="section-label">Tratamiento base</p>
+            <h2>Lo demás, sin ruido</h2>
+          </div>
+        </div>
+        <div class="base-grid" id="baseMedicationGrid"></div>
+        <div class="sertraline-note" id="sertralineNote">
+          <span class="note-icon">i</span>
+          <div>
+            <strong>Sertralina pendiente de confirmar</strong>
+            <p>Los documentos no coinciden entre 100 y 200 mg/día. No se incluye como toma activa hasta que confirmes la dosis.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5.2 3.4 9.9 8 11 4.6-1.1 8-5.8 8-11V5l-8-3Zm0 4a3 3 0 0 1 3 3v1h1v7H8v-7h1V9a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v1h2V9a1 1 0 0 0-1-1Z"/></svg>
+        <p>El seguimiento se guarda solo en este dispositivo. Esta app muestra la pauta introducida; no decide cambios de medicación.</p>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-item active" data-view="home">
+        <svg viewBox="0 0 24 24"><path d="M12 3 3 10v11h6v-7h6v7h6V10l-9-7Z"/></svg>
+        <span>Hoy</span>
+      </button>
+      <button class="nav-item" data-action="plan">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16v3H4V4Zm0 6h10v3H4v-3Zm0 6h16v3H4v-3Z"/></svg>
+        <span>Plan</span>
+      </button>
+      <button class="nav-item" data-action="history">
+        <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 8.5 6H18a6.5 6.5 0 1 1-1.9-2.6L13 9.5h8V2l-3 3A8.9 8.9 0 0 0 12 3Zm-1 4v6l5 3 1-1.7-4-2.3V7h-2Z"/></svg>
+        <span>Historial</span>
+      </button>
+    </nav>
+  </div>
+
+  <dialog class="sheet" id="planSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div>
+        <p class="section-label">Pauta prescrita</p>
+        <h2>Plan completo</h2>
+      </div>
+      <button class="close-button" data-close="planSheet" aria-label="Cerrar">×</button>
+    </div>
+    <div class="sheet-scroll">
+      <div class="plan-summary">
+        <div><span>Lorazepam</span><strong>−0,5 mg cada 5 días</strong></div>
+        <div><span>Pregabalina</span><strong>+100 mg cada 5 días hasta 600 mg</strong></div>
+      </div>
+      <div id="fullPlanList" class="full-plan-list"></div>
+      <div class="safety-card">
+        <strong>Importante</strong>
+        <p>Si una fase futura no tiene distribución confirmada, la app mostrará el total diario pero no te dirá qué tomar en cada momento. Copia solo instrucciones confirmadas por tu médico o farmacéutico.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="sheet" id="historySheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div>
+        <p class="section-label">Seguimiento</p>
+        <h2>Historial</h2>
+      </div>
+      <button class="close-button" data-close="historySheet" aria-label="Cerrar">×</button>
+    </div>
+    <div class="sheet-scroll">
+      <div id="historyList" class="history-list"></div>
+      <button class="secondary-button" id="clearHistoryButton">Borrar marcas de seguimiento</button>
+    </div>
+  </dialog>
+
+  <dialog class="sheet" id="settingsSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div>
+        <p class="section-label">Configuración</p>
+        <h2>Ajustes</h2>
+      </div>
+      <button class="close-button" data-close="settingsSheet" aria-label="Cerrar">×</button>
+    </div>
+    <div class="sheet-scroll settings-content">
+      <label class="field">
+        <span>Fecha de inicio de la pauta</span>
+        <input type="date" id="startDateInput" />
+        <small>Por defecto está configurada en 24/08/2026.</small>
+      </label>
+
+      <div class="settings-group">
+        <div class="settings-group-title">
+          <span>Sertralina</span>
+          <small>Solo cuando te confirmen cuál es la pauta correcta.</small>
+        </div>
+        <div class="segmented" id="sertralineSelector">
+          <button data-value="unknown" class="active">Pendiente</button>
+          <button data-value="100">100 mg/día</button>
+          <button data-value="200">200 mg/día</button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">
+          <span>Distribución de fases futuras</span>
+          <small>Déjalo pendiente hasta que te indiquen qué toma modificar.</small>
+        </div>
+        <div id="futureStageEditor" class="future-stage-editor"></div>
+      </div>
+
+      <button class="primary-button" id="saveSettingsButton">Guardar cambios</button>
+      <button class="secondary-button" id="resetAppButton">Restablecer app</button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>

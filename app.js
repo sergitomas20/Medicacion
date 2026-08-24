@@ -1,4 +1,4 @@
-const APP_VERSION = "1.0.0";
+const APP_VERSION = "1.0.1";
 const STORAGE_KEY = "mi-pauta-v1";
 const DEFAULT_START = "2026-08-24";
 const PERIODS = [
@@ -11,10 +11,10 @@ const STAGES = [
   { index: 0, lorTotal: 3, pregTotal: 300, lor: [1,1,1], preg: [100,100,100] },
   { index: 1, lorTotal: 2.5, pregTotal: 400, lor: null, preg: null },
   { index: 2, lorTotal: 2, pregTotal: 500, lor: null, preg: null },
-  { index: 3, lorTotal: 1.5, pregTotal: 600, lor: null, preg: null },
-  { index: 4, lorTotal: 1, pregTotal: 600, lor: null, preg: null },
-  { index: 5, lorTotal: .5, pregTotal: 600, lor: null, preg: null },
-  { index: 6, lorTotal: 0, pregTotal: 600, lor: [0,0,0], preg: null }
+  { index: 3, lorTotal: 1.5, pregTotal: 600, lor: null, preg: [200,200,200] },
+  { index: 4, lorTotal: 1, pregTotal: 600, lor: null, preg: [200,200,200] },
+  { index: 5, lorTotal: .5, pregTotal: 600, lor: null, preg: [200,200,200] },
+  { index: 6, lorTotal: 0, pregTotal: 600, lor: [0,0,0], preg: [200,200,200] }
 ];
 
 const BASE_MEDS = {

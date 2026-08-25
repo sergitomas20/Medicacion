@@ -1,0 +1,63 @@
+name: Añadir meta visual 1 a 1
+on:
+  push:
+    paths:
+      - '.github/workflows/meta-1to1.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Actualizar interfaz
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p=Path('index.html')
+          s=p.read_text()
+          s=s.replace('./styles.css?v=2.0.0','./styles.css?v=2.1.0')
+          old='''          <div class="safe-metric">\n            <div class="safe-metric-icon">↘</div>\n            <div>\n              <span>Recuperación hacia una tolerancia baja</span>\n              <strong id="recoveryMetric">19 / 100</strong>\n              <small>No es una equivalencia de dosis y no sirve para calcular cuántos comprimidos tomar.</small>\n            </div>\n          </div>'''
+          new='''          <div class="goal-metric">\n            <div class="goal-badge">\n              <span>Meta</span>\n              <strong>1:1</strong>\n            </div>\n            <div class="goal-copy">\n              <span>Camino de vuelta a la sensibilidad basal</span>\n              <div class="goal-progress" aria-hidden="true"><span id="goalProgressBar"></span></div>\n              <strong id="goalProgressText">19% hacia 1:1</strong>\n              <small>“1:1” es una meta visual del modelo: volver hacia una respuesta parecida a la inicial. No calcula cuántos comprimidos producirían un efecto ni una dosis a tomar.</small>\n            </div>\n          </div>'''
+          if old not in s:
+              raise SystemExit('No se encontró el bloque de recuperación esperado')
+          s=s.replace(old,new)
+          s=s.replace('./app.js?v=2.0.0','./app.js?v=2.1.0')
+          s=s.replace('El indicador es una herramienta visual de tendencia. No puede saber tu tolerancia biológica real ni debe utilizarse para decidir dosis.','El indicador es una herramienta visual de tendencia. No puede saber tu tolerancia biológica real ni debe utilizarse para decidir dosis. La meta “1:1” significa únicamente que el modelo se acerca a su referencia de sensibilidad basal; no es una equivalencia farmacológica ni un cálculo de comprimidos.')
+          p.write_text(s)
+
+          p=Path('app.js')
+          s=p.read_text()
+          s=s.replace("const APP_VERSION = '2.0.0';","const APP_VERSION = '2.1.0';")
+          old="  const recovery=Math.max(0,100-score); document.getElementById('recoveryMetric').textContent=`${recovery} / 100`;"
+          new="""  const recovery=Math.max(0,100-score);\n  const goalBar=document.getElementById('goalProgressBar');\n  const goalText=document.getElementById('goalProgressText');\n  if(goalBar) goalBar.style.width=`${recovery}%`;\n  if(goalText){\n    if(recovery>=95) goalText.textContent='1:1 · meta visual del modelo';\n    else goalText.textContent=`${recovery}% hacia 1:1`;\n  }"""
+          if old not in s:
+              raise SystemExit('No se encontró la métrica de recuperación esperada')
+          s=s.replace(old,new)
+          s=s.replace("navigator.serviceWorker.register('./sw.js?v=2.0.0')","navigator.serviceWorker.register('./sw.js?v=2.1.0')")
+          p.write_text(s)
+
+          p=Path('styles.css')
+          s=p.read_text()
+          old='''.safe-metric{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid var(--line);position:relative;z-index:2}.safe-metric-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(86,214,155,.09);color:#80dfb1}.safe-metric span,.safe-metric small{display:block;color:var(--muted);font-size:11px}.safe-metric strong{display:block;font-size:18px;margin:3px 0}.safe-metric small{line-height:1.35;color:var(--muted2)}'''
+          new='''.goal-metric{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:center;padding:15px;border-radius:20px;background:linear-gradient(135deg,rgba(86,214,155,.07),rgba(104,167,255,.045));border:1px solid rgba(111,208,177,.14);position:relative;z-index:2;overflow:hidden}.goal-metric:after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;right:-55px;top:-65px;background:rgba(86,214,155,.08);filter:blur(18px)}.goal-badge{width:68px;height:68px;border-radius:20px;display:grid;place-items:center;align-content:center;background:linear-gradient(145deg,rgba(86,214,155,.13),rgba(104,167,255,.08));border:1px solid rgba(129,224,184,.18);box-shadow:inset 0 1px rgba(255,255,255,.05),0 10px 28px rgba(0,0,0,.12)}.goal-badge span{font-size:9px;text-transform:uppercase;letter-spacing:.13em;color:#83dcb4;font-weight:800}.goal-badge strong{font-size:23px;letter-spacing:-.05em;margin-top:1px}.goal-copy{min-width:0;position:relative;z-index:1}.goal-copy>span,.goal-copy>small{display:block}.goal-copy>span{color:var(--muted);font-size:11px}.goal-copy>strong{display:block;font-size:17px;margin:7px 0 4px}.goal-copy>small{color:var(--muted2);font-size:10px;line-height:1.4}.goal-progress{height:7px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:8px;border:1px solid rgba(255,255,255,.035)}.goal-progress span{display:block;height:100%;width:19%;border-radius:inherit;background:linear-gradient(90deg,#5bd5ab,#71a9ff);box-shadow:0 0 14px rgba(93,211,174,.28);transition:width .85s cubic-bezier(.2,.8,.2,1)}'''
+          if old not in s:
+              raise SystemExit('No se encontró el CSS esperado')
+          s=s.replace(old,new).replace('.safe-metric{text-align:left}', '.goal-metric{text-align:left}')
+          p.write_text(s)
+
+          p=Path('sw.js')
+          s=p.read_text().replace("const CACHE='mi-pauta-v2.0.0';","const CACHE='mi-pauta-v2.1.0';")
+          s=s.replace('./styles.css?v=2.0.0','./styles.css?v=2.1.0').replace('./app.js?v=2.0.0','./app.js?v=2.1.0')
+          p.write_text(s)
+
+          Path('.github/workflows/meta-1to1.yml').unlink()
+          PY
+      - name: Publicar cambios
+        run: |
+          git config user.name "sergitomas20"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Añadir meta visual 1:1 [skip ci]"
+          git push

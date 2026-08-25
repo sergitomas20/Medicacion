@@ -1,4 +1,4 @@
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.1.0';
 const STORAGE_KEY = 'mi-pauta-lorazepam-v2';
 const DB_NAME = 'mi-pauta-db';
 const DB_STORE = 'state';
@@ -272,7 +272,14 @@ function renderTolerance(){
   const trendEl=document.getElementById('toleranceTrend');
   if(old==null || days<2){trendEl.textContent='sin datos';}
   else{const diff=Math.round(score-old);trendEl.textContent=Math.abs(diff)<2?'estable':diff<0?`↓ ${Math.abs(diff)} pts`:`↑ ${diff} pts`;}
-  const recovery=Math.max(0,100-score); document.getElementById('recoveryMetric').textContent=`${recovery} / 100`;
+  const recovery=Math.max(0,100-score);
+  const goalBar=document.getElementById('goalProgressBar');
+  const goalText=document.getElementById('goalProgressText');
+  if(goalBar) goalBar.style.width=`${recovery}%`;
+  if(goalText){
+    if(recovery>=95) goalText.textContent='1:1 · meta visual del modelo';
+    else goalText.textContent=`${recovery}% hacia 1:1`;
+  }
   let exp='El modelo está todavía muy influido por el punto de partida.';
   if(registered>=7)exp='Tus registros ya tienen un peso importante en la estimación.';
   if(registered>=21)exp='La tendencia depende sobre todo de tu historial registrado reciente.';
@@ -420,6 +427,6 @@ function bindEvents(){
 
 async function boot(){
   await loadState();bindEvents();render();
-  if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v=2.0.0').catch(()=>{});}
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v=2.1.0').catch(()=>{});}
 }
 boot();

@@ -12,7 +12,7 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
-  <link rel="stylesheet" href="./styles.css?v=2.0.0" />
+  <link rel="stylesheet" href="./styles.css?v=2.1.0" />
   <title>Mi Pauta</title>
 </head>
 <body>
@@ -122,12 +122,16 @@
             </div>
           </div>
 
-          <div class="safe-metric">
-            <div class="safe-metric-icon">↘</div>
-            <div>
-              <span>Recuperación hacia una tolerancia baja</span>
-              <strong id="recoveryMetric">19 / 100</strong>
-              <small>No es una equivalencia de dosis y no sirve para calcular cuántos comprimidos tomar.</small>
+          <div class="goal-metric">
+            <div class="goal-badge">
+              <span>Meta</span>
+              <strong>1:1</strong>
+            </div>
+            <div class="goal-copy">
+              <span>Camino de vuelta a la sensibilidad basal</span>
+              <div class="goal-progress" aria-hidden="true"><span id="goalProgressBar"></span></div>
+              <strong id="goalProgressText">19% hacia 1:1</strong>
+              <small>“1:1” es una meta visual del modelo: volver hacia una respuesta parecida a la inicial. No calcula cuántos comprimidos producirían un efecto ni una dosis a tomar.</small>
             </div>
           </div>
         </section>
@@ -297,6 +301,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="./app.js?v=2.0.0" defer></script>
+  <script src="./app.js?v=2.1.0" defer></script>
 </body>
 </html>

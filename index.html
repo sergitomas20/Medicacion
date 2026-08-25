@@ -3,234 +3,300 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#08111f" />
+  <meta name="color-scheme" content="dark light" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Mi Pauta" />
-  <meta name="description" content="Seguimiento sencillo de la pauta prescrita de medicación." />
+  <meta name="description" content="Seguimiento de lorazepam y pregabalina con historial y estimación orientativa de tolerancia." />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=2.0.0" />
   <title>Mi Pauta</title>
 </head>
 <body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
   <div class="app-shell">
     <header class="topbar">
       <div>
         <p class="eyebrow" id="todayLabel">Hoy</p>
         <h1>Mi Pauta</h1>
       </div>
-      <button class="icon-button" id="settingsButton" aria-label="Abrir ajustes">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7.4-3.5c0-.5-.05-.98-.14-1.45l2-1.56-2-3.46-2.47 1a7.8 7.8 0 0 0-2.5-1.45L13.9 2h-4l-.4 3.08A7.8 7.8 0 0 0 7 6.53l-2.47-1-2 3.46 2 1.56A7.4 7.4 0 0 0 4.4 12c0 .5.05.98.14 1.45l-2 1.56 2 3.46 2.47-1a7.8 7.8 0 0 0 2.5 1.45L9.9 22h4l.4-3.08a7.8 7.8 0 0 0 2.5-1.45l2.47 1 2-3.46-2-1.56c.09-.47.14-.95.14-1.45Z"/></svg>
+      <button class="icon-button" id="settingsButton" aria-label="Ajustes">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7.4-3.5c0-.5-.05-.98-.14-1.45l2-1.56-2-3.46-2.47 1a7.8 7.8 0 0 0-2.5-1.45L13.9 2h-4l-.4 3.08A7.8 7.8 0 0 0 7 6.53l-2.47-1-2 3.46 2 1.56A7.4 7.4 0 0 0 4.4 12c0 .5.05.98.14 1.45l-2 1.56 2 3.46 2.47-1a7.8 7.8 0 0 0 2.5 1.45l.4 3.08h4l.4-3.08a7.8 7.8 0 0 0 2.5-1.45l2.47 1 2-3.46-2-1.56c.09-.47.14-.95.14-1.45Z"/></svg>
       </button>
     </header>
 
     <main>
-      <section class="hero-card" id="heroCard">
-        <div class="hero-head">
-          <div>
-            <span class="status-pill"><span class="status-dot"></span>Pauta activa</span>
-            <p class="hero-kicker" id="stageLabel">Fase 1 · Día 1 de 5</p>
-          </div>
-          <div class="progress-ring" id="progressRing" aria-label="Progreso de la fase">
-            <span id="progressRingText">1/5</span>
-          </div>
+      <section class="start-card" id="startCard">
+        <div class="start-badge">Plan preparado</div>
+        <div class="start-orb"><span>↘</span></div>
+        <h2>Empieza cuando tú decidas</h2>
+        <p>La app no cuenta los días hasta que pulses iniciar. Desde ese momento compara lo que registras con la pauta de lorazepam y pregabalina.</p>
+        <div class="start-plan-grid">
+          <div><span>Lorazepam</span><strong>3 mg/día</strong><small>−0,5 mg cada 5 días</small></div>
+          <div><span>Pregabalina</span><strong>300 mg/día</strong><small>+100 mg cada 5 días hasta 600</small></div>
         </div>
+        <button class="primary-button big" id="startTodayButton">Iniciar hoy</button>
+        <button class="ghost-button" id="startOtherDayButton">Elegir otra fecha</button>
+        <p class="tiny-note">La estimación inicial de tolerancia parte de una exposición reciente alta (~6 mg/día) y se irá sustituyendo por tus datos reales.</p>
+      </section>
 
-        <div class="current-dose">
-          <p class="section-label">Ahora</p>
-          <div class="dose-title-row">
+      <div id="activeApp" class="hidden">
+        <section class="phase-card">
+          <div class="phase-top">
             <div>
-              <h2 id="currentDoseTitle">Toma del mediodía</h2>
-              <p id="currentDoseSubtitle">Lo que corresponde en esta toma</p>
+              <span class="status-pill"><span class="status-dot"></span>Plan en marcha</span>
+              <p class="section-label" id="phaseLabel">Fase 1 · Día 1 de 5</p>
             </div>
-            <span class="time-chip" id="currentPeriodChip">Mediodía</span>
+            <div class="day-ring" id="dayRing"><span id="dayRingText">1/5</span></div>
           </div>
-          <div id="currentDoseList" class="med-list"></div>
-          <button class="primary-button" id="markCurrentButton">Marcar toma como hecha</button>
-        </div>
-      </section>
-
-      <section class="warning-card hidden" id="unconfirmedCard">
-        <div class="warning-icon">!</div>
-        <div>
-          <h3>Pauta futura por confirmar</h3>
-          <p>El informe marca el cambio de dosis, pero no especifica qué toma modificar primero. La app no inventará esa distribución.</p>
-          <button class="text-button" id="openPlanFromWarning">Configurar cuando te lo confirmen →</button>
-        </div>
-      </section>
-
-      <section class="next-change-card">
-        <div class="next-change-top">
-          <div>
-            <p class="section-label">Próximo cambio</p>
-            <h2 id="nextChangeDate">29 de agosto</h2>
-          </div>
-          <div class="countdown-badge" id="countdownBadge">en 5 días</div>
-        </div>
-        <div class="change-grid" id="nextChangeDetails"></div>
-      </section>
-
-      <section class="today-card">
-        <div class="section-heading">
-          <div>
-            <p class="section-label">Hoy</p>
-            <h2>Tus tres momentos</h2>
-          </div>
-          <span class="completion-text" id="completionText">0 de 3</span>
-        </div>
-        <div class="timeline" id="dailyTimeline"></div>
-      </section>
-
-      <section class="plan-card">
-        <div class="section-heading">
-          <div>
-            <p class="section-label">Objetivo</p>
-            <h2>Plan de retirada</h2>
-          </div>
-          <button class="text-button" id="openPlanButton">Ver plan</button>
-        </div>
-        <div class="mini-plan">
-          <div class="mini-plan-row">
-            <div class="drug-dot lorazepam"></div>
-            <div class="mini-plan-copy">
-              <span>Lorazepam</span>
-              <strong id="lorazepamProgressText">3 mg → 0 mg</strong>
+          <div class="phase-main">
+            <div>
+              <p class="section-label">Objetivo de hoy</p>
+              <h2 id="todayTargetTitle">3 mg de lorazepam</h2>
+              <p class="phase-subtitle" id="todayTargetSubtitle">y 300 mg de pregabalina</p>
             </div>
-            <div class="mini-bar"><span id="lorazepamBar"></span></div>
-          </div>
-          <div class="mini-plan-row">
-            <div class="drug-dot pregabalin"></div>
-            <div class="mini-plan-copy">
-              <span>Pregabalina</span>
-              <strong id="pregabalinProgressText">300 mg → 600 mg</strong>
+            <div class="next-change-mini">
+              <span>Próximo cambio</span>
+              <strong id="nextChangeMini">en 5 días</strong>
             </div>
-            <div class="mini-bar"><span id="pregabalinBar"></span></div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="base-card">
-        <div class="section-heading">
-          <div>
-            <p class="section-label">Tratamiento base</p>
-            <h2>Lo demás, sin ruido</h2>
-          </div>
-        </div>
-        <div class="base-grid" id="baseMedicationGrid"></div>
-        <div class="sertraline-note" id="sertralineNote">
-          <span class="note-icon">i</span>
-          <div>
-            <strong>Sertralina pendiente de confirmar</strong>
-            <p>Los documentos no coinciden entre 100 y 200 mg/día. No se incluye como toma activa hasta que confirmes la dosis.</p>
-          </div>
-        </div>
-      </section>
+        <section class="today-grid">
+          <article class="drug-card lorazepam-card">
+            <div class="drug-card-head">
+              <div class="drug-symbol lor">L</div>
+              <div><span>Lorazepam</span><strong id="lorTarget">3 mg pautados</strong></div>
+            </div>
+            <div class="drug-live-row">
+              <div><span>Registrado hoy</span><strong id="lorLogged">0 mg</strong></div>
+              <div class="delta-badge neutral" id="lorDelta">sin registros</div>
+            </div>
+            <button class="primary-button" id="logLorazepamButton">Registrar toma</button>
+          </article>
 
-      <section class="privacy-note">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5.2 3.4 9.9 8 11 4.6-1.1 8-5.8 8-11V5l-8-3Zm0 4a3 3 0 0 1 3 3v1h1v7H8v-7h1V9a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v1h2V9a1 1 0 0 0-1-1Z"/></svg>
-        <p>El seguimiento se guarda solo en este dispositivo. Esta app muestra la pauta introducida; no decide cambios de medicación.</p>
-      </section>
+          <article class="drug-card pregabalin-card">
+            <div class="drug-card-head">
+              <div class="drug-symbol preg">P</div>
+              <div><span>Pregabalina</span><strong id="pregTarget">300 mg pautados</strong></div>
+            </div>
+            <div class="drug-live-row">
+              <div><span>Registrado hoy</span><strong id="pregLogged">0 mg</strong></div>
+              <div class="delta-badge neutral" id="pregDelta">sin registros</div>
+            </div>
+            <button class="secondary-button" id="logPregabalinButton">Registrar toma</button>
+          </article>
+        </section>
+
+        <section class="tolerance-card">
+          <div class="section-heading tolerance-heading">
+            <div>
+              <p class="section-label">Estimación orientativa</p>
+              <h2>Tolerancia al lorazepam</h2>
+            </div>
+            <button class="info-button" id="toleranceInfoButton" aria-label="Cómo se calcula">i</button>
+          </div>
+
+          <div class="tolerance-layout">
+            <div class="tolerance-orb" id="toleranceOrb" style="--score:81;--angle:218.7deg">
+              <div class="tolerance-glow"></div>
+              <div class="tolerance-track"></div>
+              <div class="tolerance-core">
+                <span id="toleranceScore">81</span>
+                <small>/100</small>
+              </div>
+              <div class="tolerance-spark"></div>
+            </div>
+            <div class="tolerance-copy">
+              <span class="tolerance-label high" id="toleranceLabel">Alta</span>
+              <p id="toleranceExplanation">El modelo parte de una exposición reciente alta y se actualizará con cada día registrado.</p>
+              <div class="metric-row">
+                <div><span>Tendencia 7 días</span><strong id="toleranceTrend">—</strong></div>
+                <div><span>Días con datos</span><strong id="loggedDays">0</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="safe-metric">
+            <div class="safe-metric-icon">↘</div>
+            <div>
+              <span>Recuperación hacia una tolerancia baja</span>
+              <strong id="recoveryMetric">19 / 100</strong>
+              <small>No es una equivalencia de dosis y no sirve para calcular cuántos comprimidos tomar.</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="alert-card hidden" id="overTargetAlert">
+          <div class="alert-icon">!</div>
+          <div><strong id="overTargetTitle">Hoy llevas más de lo pautado</strong><p id="overTargetText">La app solo registra lo ocurrido; no recomienda compensar ni aumentar dosis.</p></div>
+        </section>
+
+        <section class="next-change-card">
+          <div class="section-heading">
+            <div><p class="section-label">Siguiente escalón</p><h2 id="nextChangeDate">—</h2></div>
+            <span class="countdown-chip" id="countdownChip">—</span>
+          </div>
+          <div class="change-columns">
+            <div><span>Lorazepam</span><strong id="nextLorTarget">—</strong><small id="nextLorDiff">—</small></div>
+            <div><span>Pregabalina</span><strong id="nextPregTarget">—</strong><small id="nextPregDiff">—</small></div>
+          </div>
+          <p class="distribution-note" id="distributionNote">El total diario está definido; el reparto exacto entre tomas futuras debe quedar confirmado por médico o farmacia.</p>
+        </section>
+
+        <section class="recent-card">
+          <div class="section-heading">
+            <div><p class="section-label">Últimos días</p><h2>Cómo vas</h2></div>
+            <button class="text-button" id="openStatsButton">Ver estadísticas</button>
+          </div>
+          <div id="recentDays" class="recent-days"></div>
+        </section>
+
+        <section class="backup-card" id="backupCard">
+          <div>
+            <p class="section-label">Tus datos</p>
+            <h2>Doble copia local</h2>
+            <p>La app guarda cada registro en dos almacenes del dispositivo. Para sobrevivir a “Borrar datos de Safari”, guarda también una copia en Archivos/iCloud.</p>
+          </div>
+          <button class="secondary-button" id="quickBackupButton">Guardar copia</button>
+        </section>
+      </div>
     </main>
 
-    <nav class="bottom-nav" aria-label="Navegación principal">
+    <nav class="bottom-nav" id="bottomNav" aria-label="Navegación principal">
       <button class="nav-item active" data-view="home">
-        <svg viewBox="0 0 24 24"><path d="M12 3 3 10v11h6v-7h6v7h6V10l-9-7Z"/></svg>
-        <span>Hoy</span>
+        <svg viewBox="0 0 24 24"><path d="M12 3 3 10v11h6v-7h6v7h6V10l-9-7Z"/></svg><span>Hoy</span>
       </button>
-      <button class="nav-item" data-action="plan">
-        <svg viewBox="0 0 24 24"><path d="M4 4h16v3H4V4Zm0 6h10v3H4v-3Zm0 6h16v3H4v-3Z"/></svg>
-        <span>Plan</span>
+      <button class="nav-item" id="navStats">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16v2H2V3h2v16Zm3-3h3V8H7v8Zm5 0h3V5h-3v11Zm5 0h3v-6h-3v6Z"/></svg><span>Estadísticas</span>
       </button>
-      <button class="nav-item" data-action="history">
-        <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 8.5 6H18a6.5 6.5 0 1 1-1.9-2.6L13 9.5h8V2l-3 3A8.9 8.9 0 0 0 12 3Zm-1 4v6l5 3 1-1.7-4-2.3V7h-2Z"/></svg>
-        <span>Historial</span>
+      <button class="nav-item" id="navPlan">
+        <svg viewBox="0 0 24 24"><path d="M5 3h14v18H5V3Zm3 4h8V5H8v2Zm0 4h8V9H8v2Zm0 4h5v-2H8v2Z"/></svg><span>Plan</span>
       </button>
     </nav>
   </div>
 
-  <dialog class="sheet" id="planSheet">
+  <dialog class="sheet" id="doseSheet">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
-      <div>
-        <p class="section-label">Pauta prescrita</p>
-        <h2>Plan completo</h2>
-      </div>
-      <button class="close-button" data-close="planSheet" aria-label="Cerrar">×</button>
+      <div><p class="section-label" id="doseSheetKicker">Registrar</p><h2 id="doseSheetTitle">Lorazepam</h2></div>
+      <button class="close-button" data-close="doseSheet">×</button>
     </div>
     <div class="sheet-scroll">
-      <div class="plan-summary">
-        <div><span>Lorazepam</span><strong>−0,5 mg cada 5 días</strong></div>
-        <div><span>Pregabalina</span><strong>+100 mg cada 5 días hasta 600 mg</strong></div>
+      <div class="dose-entry-card">
+        <label class="field"><span>Cantidad que ya has tomado</span><div class="unit-input"><input type="number" id="doseAmountInput" inputmode="decimal" min="0" step="0.5" /><span id="doseUnitLabel">mg</span></div></label>
+        <div class="quick-dose-row" id="quickDoseRow"></div>
+        <label class="field"><span>Hora</span><input type="datetime-local" id="doseTimeInput" /></label>
+        <label class="field"><span>Nota opcional</span><input type="text" id="doseNoteInput" maxlength="80" placeholder="Ej. ansiedad fuerte, toma pautada…" /></label>
+        <div class="register-warning" id="registerWarning">Esto registra una toma ya realizada. No es una recomendación para tomar medicación adicional.</div>
+        <button class="primary-button" id="saveDoseButton">Guardar registro</button>
       </div>
-      <div id="fullPlanList" class="full-plan-list"></div>
-      <div class="safety-card">
-        <strong>Importante</strong>
-        <p>Si una fase futura no tiene distribución confirmada, la app mostrará el total diario pero no te dirá qué tomar en cada momento. Copia solo instrucciones confirmadas por tu médico o farmacéutico.</p>
-      </div>
+      <div class="today-log-list" id="todayLogList"></div>
     </div>
   </dialog>
 
-  <dialog class="sheet" id="historySheet">
+  <dialog class="sheet" id="statsSheet">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
-      <div>
-        <p class="section-label">Seguimiento</p>
-        <h2>Historial</h2>
-      </div>
-      <button class="close-button" data-close="historySheet" aria-label="Cerrar">×</button>
+      <div><p class="section-label">Historial</p><h2>Estadísticas</h2></div>
+      <button class="close-button" data-close="statsSheet">×</button>
     </div>
     <div class="sheet-scroll">
-      <div id="historyList" class="history-list"></div>
-      <button class="secondary-button" id="clearHistoryButton">Borrar marcas de seguimiento</button>
+      <div class="stats-hero-grid">
+        <div><span>7 días</span><strong id="stats7Average">—</strong><small>media lorazepam/día</small></div>
+        <div><span>Extras</span><strong id="stats7Extras">—</strong><small>sobre lo pautado</small></div>
+        <div><span>En objetivo</span><strong id="statsOnTarget">—</strong><small>días exactos</small></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><strong>Lorazepam: real vs pautado</strong><span>últimos 14 días</span></div>
+        <div id="statsChart" class="stats-chart"></div>
+      </div>
+      <div id="statsDayList" class="stats-day-list"></div>
+    </div>
+  </dialog>
+
+  <dialog class="sheet" id="planSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div><p class="section-label">Pauta</p><h2>Plan completo</h2></div>
+      <button class="close-button" data-close="planSheet">×</button>
+    </div>
+    <div class="sheet-scroll">
+      <div class="plan-intro">Cada escalón dura 5 días. La app calcula los totales diarios; no inventa el reparto de las fases futuras si no está confirmado.</div>
+      <div id="fullPlanList" class="full-plan-list"></div>
+    </div>
+  </dialog>
+
+  <dialog class="sheet" id="toleranceInfoSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div><p class="section-label">Modelo orientativo</p><h2>Cómo estima la tolerancia</h2></div>
+      <button class="close-button" data-close="toleranceInfoSheet">×</button>
+    </div>
+    <div class="sheet-scroll info-copy">
+      <p>No existe una fórmula clínica validada que pueda medir tu tolerancia real a benzodiacepinas desde un móvil. Por eso este indicador es un <strong>modelo de exposición adaptativa</strong>, no una medición de receptores.</p>
+      <div class="formula-card">
+        <span>1 · Dos escalas de adaptación</span>
+        <strong>rápida: 3,5 días · lenta: 21 días</strong>
+        <p>Cada toma registrada alimenta dos estados exponenciales. Si dejas de tomar lorazepam, ambos decaen gradualmente; el lento tarda más.</p>
+      </div>
+      <div class="formula-card">
+        <span>2 · Respuesta no lineal</span>
+        <strong>combinación ponderada + curva de Hill</strong>
+        <p>La exposición acumulada se transforma mediante una curva sigmoide a una escala 0–100, por lo que el indicador no es una simple regla de tres.</p>
+      </div>
+      <div class="formula-card">
+        <span>3 · Punto de partida</span>
+        <strong>6 mg/día de exposición reciente estimada</strong>
+        <p>Es un punto inicial deliberadamente alto basado en la pauta/consumo reciente descrito. Con el tiempo pierde peso y mandan tus registros reales.</p>
+      </div>
+      <p class="info-disclaimer">La literatura describe tolerancia como un proceso neuroadaptativo heterogéneo, con distintos mecanismos y velocidades según el efecto. Por eso el número sirve para ver tendencia, no para convertirlo en una dosis.</p>
+      <div class="source-links">
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3321276/" target="_blank" rel="noopener">Revisión sobre mecanismos de tolerancia (2012) ↗</a>
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13269140/" target="_blank" rel="noopener">Revisión sináptica reciente (2026) ↗</a>
+        <a href="https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=eb068a0f-5c0e-4218-b4c5-a0d0b1d362bd" target="_blank" rel="noopener">Farmacología de lorazepam / DailyMed ↗</a>
+      </div>
     </div>
   </dialog>
 
   <dialog class="sheet" id="settingsSheet">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
-      <div>
-        <p class="section-label">Configuración</p>
-        <h2>Ajustes</h2>
-      </div>
-      <button class="close-button" data-close="settingsSheet" aria-label="Cerrar">×</button>
+      <div><p class="section-label">Configuración</p><h2>Ajustes</h2></div>
+      <button class="close-button" data-close="settingsSheet">×</button>
     </div>
     <div class="sheet-scroll settings-content">
-      <label class="field">
-        <span>Fecha de inicio de la pauta</span>
-        <input type="date" id="startDateInput" />
-        <small>Por defecto está configurada en 24/08/2026.</small>
-      </label>
-
       <div class="settings-group">
-        <div class="settings-group-title">
-          <span>Sertralina</span>
-          <small>Solo cuando te confirmen cuál es la pauta correcta.</small>
-        </div>
-        <div class="segmented" id="sertralineSelector">
-          <button data-value="unknown" class="active">Pendiente</button>
-          <button data-value="100">100 mg/día</button>
-          <button data-value="200">200 mg/día</button>
-        </div>
+        <div class="settings-title"><strong>Inicio del plan</strong><span id="settingsStartStatus">No iniciado</span></div>
+        <label class="field"><span>Fecha</span><input type="date" id="startDateInput" /></label>
+        <button class="secondary-button" id="applyStartDateButton">Aplicar fecha</button>
       </div>
-
       <div class="settings-group">
-        <div class="settings-group-title">
-          <span>Distribución de fases futuras</span>
-          <small>Déjalo pendiente hasta que te indiquen qué toma modificar.</small>
-        </div>
-        <div id="futureStageEditor" class="future-stage-editor"></div>
+        <div class="settings-title"><strong>Estimación inicial</strong><span>Exposición previa</span></div>
+        <label class="field"><span>Media reciente antes de empezar (mg/día)</span><input type="number" id="baselineInput" min="0" step="0.5" /></label>
+        <small class="field-help">Predeterminado: 6 mg/día. Cambiarlo reinicia el punto de partida del modelo, no tus registros.</small>
+        <button class="secondary-button" id="saveBaselineButton">Actualizar estimación inicial</button>
       </div>
-
-      <button class="primary-button" id="saveSettingsButton">Guardar cambios</button>
-      <button class="secondary-button" id="resetAppButton">Restablecer app</button>
+      <div class="settings-group">
+        <div class="settings-title"><strong>Copia de seguridad</strong><span>Recomendado</span></div>
+        <div class="settings-actions"><button class="secondary-button" id="exportButton">Exportar a Archivos</button><button class="secondary-button" id="importButton">Importar copia</button></div>
+        <input type="file" id="importFileInput" accept="application/json,.json" hidden />
+        <small class="field-help">Los registros se guardan en localStorage + IndexedDB. Una copia en Archivos/iCloud es la única forma de conservarlos incluso si borras todos los datos de Safari.</small>
+      </div>
+      <div class="settings-group danger-zone">
+        <div class="settings-title"><strong>Datos</strong><span>Cuidado</span></div>
+        <button class="danger-button" id="resetButton">Borrar todos los registros</button>
+      </div>
     </div>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="./app.js" defer></script>
+  <script src="./app.js?v=2.0.0" defer></script>
 </body>
 </html>

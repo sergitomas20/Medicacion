@@ -1,0 +1,32 @@
+name: Activar modelo PK
+
+on:
+  push:
+    paths:
+      - '.github/workflows/enable-pk-model.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  enable:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Integrar modelo
+        shell: bash
+        run: |
+          node --check pk-model.js
+          sed -i 's/v=2\.1\.0/v=2.2.0/g; s/v=2\.0\.0/v=2.2.0/g' index.html
+          python3 -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(); old='<script src=\"./app.js?v=2.2.0\" defer></script>'; new=old+'\n  <script src=\"./pk-model.js?v=2.2.0\" defer></script>'; p.write_text(s if 'pk-model.js' in s else s.replace(old,new))"
+          sed -i 's/v2\.1\.0/v2.2.0/g' sw.js
+          python3 -c "from pathlib import Path; p=Path('sw.js'); s=p.read_text(); old=\"'./app.js?v=2.2.0','./manifest.webmanifest'\"; new=\"'./app.js?v=2.2.0','./pk-model.js?v=2.2.0','./manifest.webmanifest'\"; p.write_text(s.replace(old,new))"
+      - name: Publicar
+        shell: bash
+        run: |
+          git config user.name "sergitomas20"
+          git config user.email "actions@users.noreply.github.com"
+          git rm .github/workflows/enable-pk-model.yml
+          git add index.html sw.js pk-model.js
+          git commit -m "Activar modelo PK de tolerancia [skip ci]"
+          git push

@@ -11,25 +11,42 @@ PWA móvil centrada exclusivamente en el seguimiento de **lorazepam + pregabalin
 - Incluye estadísticas de 7/14 días y recuento de cantidad extra sobre la pauta.
 - Incluye un **índice orientativo de tolerancia 0–100** con animación y tendencia.
 
-## Modelo orientativo de tolerancia
+## Modelo orientativo de tolerancia v2.2
 
-No existe una ecuación clínica validada capaz de medir la tolerancia real individual a benzodiacepinas solo con un historial de dosis. La app usa por tanto un modelo heurístico de **exposición adaptativa**, pensado para visualizar tendencias y motivar la reducción, no para decidir dosis.
+No existe una ecuación clínica validada que mida la tolerancia individual a benzodiacepinas solo desde un historial de dosis. La app usa un modelo **farmacocinético + adaptativo** para visualizar tendencia, no para decidir dosis.
 
-El modelo mantiene dos estados exponenciales de adaptación:
+### Capa farmacocinética
 
-- componente rápida: semivida adaptativa de 3,5 días;
-- componente lenta: semivida adaptativa de 21 días;
-- pesos: 42% rápida + 58% lenta;
-- cada toma registrada aumenta ambos estados y, entre tomas, decaen exponencialmente;
-- la exposición combinada se transforma a 0–100 mediante una curva de Hill (n=1,45; EC50 heurística=2,2).
+Cada toma real se integra según su hora usando:
 
-El punto de partida está sembrado en 6 mg/día como estimación de exposición reciente alta y puede cambiarse en Ajustes. A medida que se acumulan registros propios, ese punto de partida pierde peso.
+- biodisponibilidad oral aproximada: 90 %;
+- Tmax objetivo: ~2 h;
+- semivida de eliminación: ~12 h;
+- absorción de primer orden (`ka` derivada de Tmax y `ke`);
+- compartimento de efecto con semivida de equilibrado ~0,43 h;
+- integración temporal cada 15 minutos.
+
+Esto hace que la app ya no trate igual una cantidad tomada de golpe que la misma cantidad repartida: primero reconstruye una curva relativa de exposición plasmática y de exposición CNS.
+
+### Capa adaptativa
+
+La exposición del compartimento de efecto se transforma de forma sigmoide y alimenta dos memorias:
+
+- componente rápida: semivida adaptativa heurística de 3,5 días;
+- componente lenta: semivida adaptativa heurística de 21 días;
+- pesos: 42 % rápida + 58 % lenta.
+
+El punto de partida se reconstruye con 90 días virtuales usando la media previa configurada, repartida en tres tomas al día. Con 6 mg/día el modelo queda aproximadamente alrededor de 81/100. Después del inicio, las horas y cantidades registradas van sustituyendo esa historia previa.
+
+Los parámetros farmacocinéticos están anclados a datos publicados. Las velocidades de neuroadaptación siguen siendo **heurísticas**, porque la tolerancia a benzodiacepinas es heterogénea y no existe un modelo humano validado que convierta el consumo individual en un porcentaje biológico exacto.
 
 Referencias conceptuales:
 
-- Vinkers CH, Olivier B. *Mechanisms Underlying Tolerance after Long-Term Benzodiazepine Use* (2012): https://pmc.ncbi.nlm.nih.gov/articles/PMC3321276/
+- DailyMed, lorazepam: biodisponibilidad ~90 %, Tmax ~2 h y semivida plasmática media ~12 h: https://dailymed.nlm.nih.gov/
+- Mandema et al., modelo PK/PD de lorazepam con compartimento de efecto: https://pubmed.ncbi.nlm.nih.gov/2348383/
+- Blin et al., análisis PK/PD oral de lorazepam: https://pubmed.ncbi.nlm.nih.gov/11307041/
+- Vinkers & Olivier, mecanismos de tolerancia a benzodiacepinas: https://pmc.ncbi.nlm.nih.gov/articles/PMC3321276/
 - *Synaptic correlates of benzodiazepine tolerance* (2026): https://pmc.ncbi.nlm.nih.gov/articles/PMC13269140/
-- DailyMed, lorazepam: https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=eb068a0f-5c0e-4218-b4c5-a0d0b1d362bd
 
 **El índice no es una medición biológica y no se utiliza para calcular cuántos comprimidos producirían un efecto determinado.**
 

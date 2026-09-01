@@ -1,0 +1,1 @@
+{"name":"medicacion-pwa","private":true,"version":"3.0.0","scripts":{"test":"node --test tests/core.test.cjs","check":"node --check core.js && node --check app.js && node --check sw.js"}}
